@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Control de Acceso QR</title>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .contenedor {
+      background: white;
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 25px 15px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px #0002;
+    }
+
+    h1 { font-size: 26px; }
+
+    .subtitulo { color: #555; }
+
+    #lectorQR {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    button {
+      background: #198754;
+      color: white;
+      border: none;
+      padding: 17px;
+      width: 100%;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 10px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    #resultado {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      background: #e9ecef;
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="contenedor">
+    <h1>CONTROL DE ACCESO</h1>
+    <p class="subtitulo">EVENTO DEPORTIVO</p>
+
+    <button id="boton" onclick="iniciarLector()">
+      INICIAR ESCÁNER QR
+    </button>
+
+    <div id="lectorQR"></div>
+
+    <div id="resultado">
+      Esperando lectura de boleta...
+    </div>
+  </div>
+
+  <script>
+    let lector = null;
+    let activo = false;
+    let procesando = false;
+
+    async function iniciarLector() {
+      if (activo) return;
+
+      const resultado = document.getElementById("resultado");
+      const boton = document.getElementById("boton");
+
+      if (typeof Html5Qrcode === "undefined") {
+        resultado.textContent = "No se cargó la biblioteca QR.";
+        return;
+      }
+
+      boton.disabled = true;
+      resultado.textContent = "Solicitando acceso a la cámara...";
+
+      try {
+        lector = new Html5Qrcode("lectorQR");
+
+        await lector.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+          },
+          function(textoQR) {
+            if (procesando) return;
+            procesando = true;
+
+            let codigo = String(textoQR || "").trim();
+
+            try {
+              const url = new URL(codigo);
+              codigo = url.searchParams.get("codigo") || codigo;
+            } catch (e) {}
+
+            codigo = codigo.trim().toUpperCase();
+
+            resultado.style.background = "#d1e7dd";
+            resultado.textContent = "QR DETECTADO: " + codigo;
+
+            // Evita lecturas repetidas inmediatas.
+            setTimeout(function() {
+              procesando = false;
+            }, 2500);
+          },
+          function() {
+            // Ignora los fotogramas sin QR.
+          }
+        );
+
+        activo = true;
+        boton.textContent = "CÁMARA ACTIVA";
+        resultado.textContent = "Apunte al QR de la boleta.";
+
+      } catch (error) {
+        activo = false;
+        boton.disabled = false;
+        resultado.textContent =
+          "No se pudo abrir la cámara: " + error;
+      }
+    }
+  </script>
+</body>
+</html>
