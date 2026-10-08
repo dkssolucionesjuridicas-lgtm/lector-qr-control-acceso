@@ -65,7 +65,30 @@
     <h1>CONTROL DE ACCESO</h1>
     <p class="subtitulo">EVENTO DEPORTIVO</p>
 
-    <button id="boton" onclick="iniciarLector()">
+   <div id="configuracionControl">
+
+  <h3>IDENTIFICACIÓN DEL CONTROLADOR</h3>
+
+  <select id="puertaSeleccionada">
+    <option value="">SELECCIONE LA PUERTA</option>
+    <option value="PUERTA 1">PUERTA 1</option>
+    <option value="PUERTA 2">PUERTA 2</option>
+    <option value="PUERTA 3">PUERTA 3</option>
+  </select>
+
+  <br><br>
+
+  <input
+    type="password"
+    id="claveControl"
+    placeholder="Contraseña del controlador"
+  >
+
+  <br><br>
+
+</div>
+<button id="boton" onclick="iniciarLector()">
+      
       INICIAR ESCÁNER QR
     </button>
 
@@ -82,6 +105,18 @@
     let procesando = false;
 
     async function iniciarLector() {
+    const puerta = document.getElementById("puertaSeleccionada").value;
+const clave = document.getElementById("claveControl").value.trim();
+
+if (!puerta) {
+  alert("Debe seleccionar una puerta.");
+  return;
+}
+
+if (!clave) {
+  alert("Debe ingresar la contraseña del controlador.");
+  return;
+}
       if (activo) return;
 
       const resultado = document.getElementById("resultado");
