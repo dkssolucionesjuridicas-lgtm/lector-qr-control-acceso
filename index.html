@@ -1,5 +1,5 @@
 
-<!DOCTYPE html>
+<!DOCTYPE html>|
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -153,7 +153,9 @@ if (!clave) {
             codigo = codigo.trim().toUpperCase();
 
             resultado.style.background = "#d1e7dd";
-            resultado.textContent = "QR DETECTADO: " + codigo;
+            
+            resultado.textContent = "VALIDANDO BOLETA: " + codigo;
+          
 
             // Evita lecturas repetidas inmediatas.
             setTimeout(function() {
