@@ -155,8 +155,15 @@ if (!clave) {
             resultado.style.background = "#d1e7dd";
             
             resultado.textContent = "VALIDANDO BOLETA: " + codigo;
-          
+          const urlValidacion =
+  "https://script.google.com/macros/s/AKfycbzau4W_ig4a_LEktyy5q_GEQb5CjOkDiAIN_z0r_skvZumBVtGFBi4wQ91z1gVxv4C9/exec" +
+  "?codigo=" + encodeURIComponent(codigo) +
+  "&modo=control" +
+  "&puerta=" + encodeURIComponent(puerta) +
+  "&clave=" + encodeURIComponent(clave);
 
+window.location.href = urlValidacion;
+return;
             // Evita lecturas repetidas inmediatas.
             setTimeout(function() {
               procesando = false;
