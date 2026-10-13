@@ -162,8 +162,8 @@ if (!clave) {
   "&puerta=" + encodeURIComponent(puerta) +
   "&clave=" + encodeURIComponent(clave);
 
-window.location.assign(urlValidacion);
-return;
+window.open(urlValidacion, "_blank");
+
             // Evita lecturas repetidas inmediatas.
             setTimeout(function() {
               procesando = false;
