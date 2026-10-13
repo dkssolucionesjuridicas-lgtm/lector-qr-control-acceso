@@ -162,7 +162,7 @@ if (!clave) {
   "&puerta=" + encodeURIComponent(puerta) +
   "&clave=" + encodeURIComponent(clave);
 
-window.location.href = urlValidacion;
+window.location.assign(urlValidacion);
 return;
             // Evita lecturas repetidas inmediatas.
             setTimeout(function() {
