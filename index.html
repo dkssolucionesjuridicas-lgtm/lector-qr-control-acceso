@@ -164,6 +164,7 @@ if (!clave) {
 await lector.stop();
 await lector.clear();
 activo = false;
+procesando = false;
 boton.disabled = false;
 boton.textContent = "ESCANEAR OTRA BOLETA";
 window.open(urlValidacion, "_blank");
