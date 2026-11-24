@@ -1,0 +1,662 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE FINALS 2026 | Control de acceso</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: white;
+  background: #100417;
+}
+
+.pantalla {
+  position: relative;
+  width: 100%;
+  max-width: 850px;
+  margin: auto;
+  padding-bottom: 25px;
+  background: #100417;
+}
+
+.afiche {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.panel {
+  position: relative;
+  width: 94%;
+  margin: -29% auto 20px;
+  padding: 24px;
+  background: rgba(12, 4, 20, .94);
+  border: 2px solid #dc35ff;
+  border-radius: 22px;
+  box-shadow: 0 0 25px #b000ff80;
+  backdrop-filter: blur(10px);
+}
+
+h1 {
+  font-size: clamp(20px, 4vw, 32px);
+  text-align: center;
+  margin: 0 0 24px;
+  font-style: italic;
+  text-shadow: 0 0 15px #a600ff;
+}
+
+h2 {
+  text-align: center;
+  font-size: 22px;
+}
+
+label {
+  display: block;
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.columnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+select,
+input {
+  width: 100%;
+  padding: 14px;
+  color: white;
+  background: #24142e;
+  border: 1px solid #bc65e7;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-bottom: 18px;
+}
+
+select:focus,
+input:focus {
+  outline: 2px solid #d52cff;
+  box-shadow: 0 0 12px #b000ff;
+}
+
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 10px;
+  margin-bottom: 12px;
+  border: 1px solid #9c58b8;
+  border-radius: 10px;
+  background: #291137;
+  cursor: pointer;
+}
+
+.opcion input {
+  width: auto;
+  margin: 0;
+  accent-color: #cb25ff;
+}
+
+.opcion:has(input:checked) {
+  background: #640b91;
+  border-color: #e8a1ff;
+  box-shadow: 0 0 10px #b000ff80;
+}
+
+button {
+  width: 100%;
+  padding: 17px;
+  margin-top: 12px;
+  border: 1px solid #c34cff;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #a900e9, #62008f);
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.secundario {
+  background: #281631;
+}
+
+.nota {
+  color: #ddd0e5;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 18px;
+}
+
+#operacion {
+  display: none;
+}
+
+#lectorQR {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-top: 15px;
+}
+
+#resultado {
+  padding: 18px;
+  margin-top: 15px;
+  background: #291137;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+#puertaActiva {
+  text-align: center;
+  color: #edb4ff;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+#entradaUSB {
+  display: none;
+}
+
+#codigoUSB {
+  margin-top: 12px;
+}
+
+body.operativo .afiche {
+  max-height: 180px;
+  object-fit: contain;
+}
+
+body.operativo .panel {
+  margin: 15px auto;
+}
+
+@media (max-width: 600px) {
+  .columnas {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .panel {
+    padding: 18px;
+    margin-top: -24%;
+  }
+
+  h1 {
+    font-size: 21px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="pantalla">
+
+  <img
+    class="afiche"
+    src="fondo-finals-2026.png"
+    alt="THE FINALS 2026 - Cheer and Dance Colombia"
+  >
+
+  <section class="panel">
+
+    <h1>CONTROL OFICIAL DE ACCESO</h1>
+
+    <div id="configuracion">
+
+      <div class="columnas">
+
+        <div>
+          <label for="puertaSeleccionada">
+            Seleccione la puerta
+          </label>
+
+          <select id="puertaSeleccionada">
+            <option value="">SELECCIONE LA PUERTA</option>
+            <option value="PUERTA 1">PUERTA 1 - INGRESO</option>
+            <option value="PUERTA 2">PUERTA 2 - INGRESO</option>
+            <option value="PUERTA 3">PUERTA 3 - INGRESO</option>
+            <option value="PUERTA 4">PUERTA 4 - SALIDA</option>
+          </select>
+
+          <label for="claveControl">
+            Clave del controlador
+          </label>
+
+          <input
+            type="password"
+            id="claveControl"
+            placeholder="Ingrese su contraseña"
+            autocomplete="off"
+          >
+        </div>
+
+        <div>
+
+          <label>Método de lectura</label>
+
+          <label class="opcion">
+            <input
+              type="radio"
+              name="metodo"
+              value="usb"
+              checked
+            >
+            Lector QR Steren
+          </label>
+
+          <label class="opcion">
+            <input
+              type="radio"
+              name="metodo"
+              value="camara"
+            >
+            Cámara del teléfono
+          </label>
+
+        </div>
+
+      </div>
+
+      <button onclick="activarControl()">
+        ▶ ACTIVAR CONTROL DE ACCESO
+      </button>
+
+    </div>
+
+    <div id="operacion">
+
+      <div id="puertaActiva"></div>
+
+      <h2 id="metodoActivo"></h2>
+
+      <div id="entradaUSB">
+
+        <label for="codigoUSB">
+          Escanee o digite el código de la boleta
+        </label>
+
+        <input
+          type="text"
+          id="codigoUSB"
+          placeholder="Esperando código QR..."
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        >
+
+        <button onclick="validarUSB()">
+          VALIDAR BOLETA
+        </button>
+
+      </div>
+
+      <button id="botonCamara" onclick="iniciarCamara()">
+        INICIAR CÁMARA QR
+      </button>
+
+      <div id="lectorQR"></div>
+
+      <div id="resultado" role="status">
+        Esperando lectura de boleta...
+      </div>
+
+      <button
+        id="botonManual"
+        class="secundario"
+        onclick="ingresoManual()"
+      >
+        INGRESAR CÓDIGO MANUALMENTE
+      </button>
+
+      <button
+        class="secundario"
+        onclick="cambiarConfiguracion()"
+      >
+        CAMBIAR PUERTA O MÉTODO DE LECTURA
+      </button>
+
+    </div>
+
+    <div class="nota">
+      Uso exclusivo del personal autorizado.
+      <br>
+      Cartagena de Indias · 27, 28 y 29 de noviembre de 2026
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+
+const URL_VALIDACION =
+  "https://script.google.com/macros/s/AKfycbzau4W_ig4a_LEktyy5q_GEQb5CjOkDiAIN_z0r_skvZumBVtGFBi4wQ91z1gVxv4C9/exec";
+
+let puerta = "";
+let clave = "";
+let metodo = "";
+let lector = null;
+let activo = false;
+let iniciando = false;
+let procesando = false;
+
+const obtener = id => document.getElementById(id);
+
+obtener("puertaSeleccionada").addEventListener("change", function() {
+
+  const recomendado =
+    this.value === "PUERTA 3" || this.value === "PUERTA 4"
+    ? "camara"
+    : "usb";
+
+  document.querySelector(
+    'input[name="metodo"][value="' + recomendado + '"]'
+  ).checked = true;
+
+});
+
+function activarControl() {
+
+  puerta = obtener("puertaSeleccionada").value;
+  clave = obtener("claveControl").value.trim();
+
+  metodo = document.querySelector(
+    'input[name="metodo"]:checked'
+  ).value;
+
+  if (!puerta) {
+    alert("Debe seleccionar una puerta.");
+    return;
+  }
+
+  if (!clave) {
+    alert("Debe ingresar la clave del controlador.");
+    return;
+  }
+
+  obtener("configuracion").style.display = "none";
+  obtener("operacion").style.display = "block";
+
+  document.body.classList.add("operativo");
+
+  obtener("puertaActiva").textContent =
+    puerta + (puerta === "PUERTA 4" ? " - SALIDA" : " - INGRESO");
+
+  obtener("metodoActivo").textContent =
+    metodo === "usb"
+    ? "LECTOR QR STEREN"
+    : "CÁMARA DEL TELÉFONO";
+
+  obtener("entradaUSB").style.display =
+    metodo === "usb" ? "block" : "none";
+
+  obtener("botonCamara").style.display =
+    metodo === "camara" ? "block" : "none";
+
+  obtener("resultado").textContent =
+    "Equipo configurado. La clave se verificará al validar la boleta.";
+
+  if (metodo === "usb") {
+    obtener("codigoUSB").focus();
+  }
+}
+
+function extraerCodigo(texto) {
+
+  let codigo = String(texto || "").trim();
+
+  try {
+    const url = new URL(codigo);
+    codigo = url.searchParams.get("codigo") || "";
+  } catch (e) {}
+
+  return codigo.trim().toUpperCase();
+}
+
+function validarBoleta(texto) {
+
+  if (procesando) return;
+
+  const codigo = extraerCodigo(texto);
+
+  if (!codigo || !/^[A-Z0-9_-]+$/.test(codigo)) {
+    obtener("resultado").textContent =
+      "Código no reconocido. Intente nuevamente.";
+    return;
+  }
+
+  procesando = true;
+
+  const url = URL_VALIDACION +
+    "?codigo=" + encodeURIComponent(codigo) +
+    "&modo=control" +
+    "&puerta=" + encodeURIComponent(puerta) +
+    "&clave=" + encodeURIComponent(clave);
+
+  obtener("resultado").textContent =
+    "BOLETA ENVIADA A VALIDACIÓN: " + codigo;
+
+  const ventana = window.open(url, "_blank");
+
+  if (!ventana) {
+
+    obtener("resultado").textContent =
+      "El navegador bloqueó la ventana. Pulse el enlace para validar.";
+
+    const enlace = document.createElement("a");
+
+    enlace.href = url;
+    enlace.target = "_blank";
+    enlace.rel = "noopener";
+    enlace.textContent = " ABRIR VALIDACIÓN";
+    enlace.style.color = "#efb8ff";
+
+    obtener("resultado").appendChild(enlace);
+
+  } else {
+
+    obtener("resultado").textContent =
+      "Consulte el resultado oficial en la ventana de validación.";
+
+  }
+
+  obtener("codigoUSB").value = "";
+  procesando = false;
+
+  if (metodo === "usb") {
+    obtener("codigoUSB").focus();
+  }
+}
+
+function validarUSB() {
+
+  if (metodo !== "usb") return;
+
+  validarBoleta(obtener("codigoUSB").value);
+}
+
+obtener("codigoUSB").addEventListener("keydown", function(e) {
+
+  if (e.key === "Enter") {
+    e.preventDefault();
+    validarUSB();
+  }
+
+});
+
+window.addEventListener("focus", function() {
+
+  if (metodo === "usb" &&
+      obtener("operacion").style.display === "block") {
+    obtener("codigoUSB").focus();
+  }
+
+});
+
+async function iniciarCamara() {
+
+  if (activo || iniciando || procesando) return;
+
+  if (typeof Html5Qrcode === "undefined") {
+    obtener("resultado").textContent =
+      "No se cargó la biblioteca QR. Revise la conexión.";
+    return;
+  }
+
+  iniciando = true;
+
+  const boton = obtener("botonCamara");
+
+  boton.disabled = true;
+
+  obtener("resultado").textContent =
+    "Solicitando acceso a la cámara...";
+
+  try {
+
+    lector = new Html5Qrcode("lectorQR");
+
+    await lector.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: { width: 220, height: 220 }
+      },
+      async function(textoQR) {
+
+        if (procesando || !activo) return;
+
+        procesando = true;
+
+        try {
+
+          await lector.stop();
+          await lector.clear();
+
+          activo = false;
+          lector = null;
+          procesando = false;
+
+          boton.disabled = false;
+          boton.textContent = "ESCANEAR OTRA BOLETA";
+
+          validarBoleta(textoQR);
+
+        } catch (error) {
+
+          procesando = false;
+
+          obtener("resultado").textContent =
+            "Error al detener la cámara. Recargue la página.";
+
+        }
+
+      },
+      function() {}
+    );
+
+    activo = true;
+    iniciando = false;
+
+    boton.textContent = "CÁMARA ACTIVA";
+
+    obtener("resultado").textContent =
+      "Apunte la cámara al código QR de la boleta.";
+
+  } catch (error) {
+
+    activo = false;
+    iniciando = false;
+    boton.disabled = false;
+
+    obtener("resultado").textContent =
+      "No fue posible abrir la cámara: " + error;
+
+  }
+
+}
+
+async function detenerCamara() {
+
+  if (activo && lector) {
+
+    await lector.stop();
+    await lector.clear();
+
+    activo = false;
+    lector = null;
+
+  }
+
+  obtener("botonCamara").disabled = false;
+  obtener("botonCamara").textContent = "INICIAR CÁMARA QR";
+}
+
+async function ingresoManual() {
+
+  if (procesando || iniciando) return;
+
+  try {
+    await detenerCamara();
+  } catch (error) {
+    alert("No se pudo detener la cámara. Recargue la página.");
+    return;
+  }
+
+  const codigo = prompt("Digite el código de la boleta:");
+
+  if (codigo) {
+    validarBoleta(codigo);
+  }
+
+}
+
+async function cambiarConfiguracion() {
+
+  if (procesando || iniciando) return;
+
+  try {
+    await detenerCamara();
+  } catch (error) {
+    alert("No se pudo detener la cámara. Recargue la página.");
+    return;
+  }
+
+  obtener("operacion").style.display = "none";
+  obtener("configuracion").style.display = "block";
+
+  obtener("claveControl").value = "";
+  obtener("codigoUSB").value = "";
+
+  document.body.classList.remove("operativo");
+
+  puerta = "";
+  clave = "";
+  metodo = "";
+}
+
+</script>
+
+</body>
+</html>
